@@ -1,4 +1,6 @@
-# ProticalAnalysis
-本软件可实现GBT 27930-2015《电动汽车非车载传导式充电机与电池管理系统之间的通信协议》的解析， 目前已广泛用于直流充电桩实验室测试以及现场问题定位，客户反馈软件运行稳定，测试效率提升明显、同时帮助售后人员缩短了现场问题定位时间。
+Protocol Analysis
+This software can achieve the parsing of the communication protocol between non-vehicular conductive chargers and battery management systems for electric vehicles, as specified in GBT 27930-2015. It is currently widely used for laboratory testing of DC charging stations and on-site issue troubleshooting. Customers have provided feedback indicating stable software operation, a noticeable improvement in testing efficiency, and assistance in reducing on-site issue troubleshooting time for after-sales personnel.
 
-（协议解析的接口测试python文件需要使用python3.6版本，其他python文件均可以使用python3.7版本。）
+(The Python file for interface testing of protocol parsing needs to be used with Python version 3.6, while other Python files can be used with Python version 3.7.)
+
+This project is a fork and translation to the English Language
