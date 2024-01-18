@@ -4,51 +4,50 @@ from mainwindow import Ui_MainWindow
 from PyQt5.QtGui import QTextCursor
 from protocalFile import Protocal
 
+protocal = Protocal()  # The custom Protocal class defines various protocol parsing methods.
+# Define the dictionary that maps protocol types to their processing methods.
+protocal_dict = {
+    '1808F456(CML)': protocal.cmlPileMaximumOutputCapability,  # CML charging pile maximum output capability message
+    '181056F4(BCL)': protocal.bclBatteryChargingDemand,        # BCL battery charging demand message
+    '1826F456(CHM)': protocal.chmHandshake,                    # CHM charger handshake message
+    '182756F4(BHM)': protocal.bhmHandshake,                    # BHM vehicle handshake message
+    '1801F456(CRM)': protocal.crm_identify,                    # CRM charger identification message
+    '100956F4(BRO)': protocal.broCarReadyOk,                   # BRO vehicle ready message
+    '100AF456(CRO)': protocal.croChargerReadyOk,               # CRO charger ready message
+    '1812F456(CCS)': protocal.ccsChargerState,                 # CCS charger state message
+    '181356F4(BSM)': protocal.bsmBatteryStatus,                # BSM power battery status message
+    'BCS Multi Packet Message': protocal.bcsMulPackets,                 # BCS multipacket data message (2 packets)
+    '101956F4(BST)': protocal.bstEndCharge,                    # BMS stop charging reason message (BST)
+    '101AF456(CST)': protocal.cstEndCharge,                    # Charger stop charging message (CST)
+    'BMV Multi Packet Message': protocal.bmvMulitiPackets,              # Single battery voltage message (BMV)
+    'BCP Multi Packet Message': protocal.bcpChargePamrameters,          # Power battery charging parameters message (BCP)
+    'BMT Multi Packet Message': protocal.bmtMultiPackes,                # Power battery temperature message (BMT)
+    'BRM Multi Packet Message': protocal.brmMuitiPackes,                # BMS and vehicle identification message (BRM)
+    '181C56F4(BSD)': protocal.bsd,                             # BMS statistical data message (BSD)
+    '181DF456(CSD)': protocal.csd,                             # Charger statistical data message (CSD)
+    '081E56F4(BEM)': protocal.bem,                             # Charger error message (BEM)
+    '081FF456(CEM)': protocal.cem                              # Charger error message (CEM)
+}
 
-protocal = Protocal()  # 自定义Protocal类中定义了各种协议的解析方法
-# 定义协议类型与处理方法之间的对应关系字典
-protocal_dict = {'1808F456(CML)': protocal.cmlPileMaximumOutputCapability,  # cml充电桩最大输出能力报文
-                 '181056F4(BCL)': protocal.bclBatteryChargingDemand,     # bcl电池充电需求报文
-                 '1826F456(CHM)': protocal.chmHandshake,     # chm充电机握手报文
-                 '182756F4(BHM)': protocal.bhmHandshake,     # BHM车辆握手报文
-                 '1801F456(CRM)': protocal.crm_identify,     # CRM充电机辨识报文
-                 '100956F4(BRO)': protocal.broCarReadyOk,    # BRO车辆准备就绪报文
-                 '100AF456(CRO)': protocal.croChargerReadyOk,   # CRO充电机准备就绪报文
-                 '1812F456(CCS)': protocal.ccsChargerState,    # CCS充电机充电状态报文
-                 '181356F4(BSM)': protocal.bsmBatteryStatus,    # BSM动力蓄电池状态信息报文
-                 'BCS多包数据报文': protocal.bcsMulPackets,      # BCS多包数据报文（2包）
-                 '101956F4(BST)': protocal.bstEndCharge,    # BMS中止充电原因报文(BST)
-                 '101AF456(CST)': protocal.cstEndCharge,      # 充电机中止充电报文（CST）
-                 'BMV多包数据报文': protocal.bmvMulitiPackets,   # 单体动力蓄电池电压报文（BMV)
-                 'BCP多包数据报文': protocal.bcpChargePamrameters,   # 动力蓄电池充电参数报文（BCP）
-                 'BMT多包数据报文': protocal.bmtMultiPackes,       # 动力蓄电池温度报文（BMT）
-                 'BRM多包数据报文': protocal.brmMuitiPackes,         # BMS和车辆辨识报文（BRM）
-                 '181C56F4(BSD)': protocal.bsd,       # BMS统计数据报文(BSD)
-                 '181DF456(CSD)': protocal.csd,       # 充电机统计数据报文（CSD）
-                 '081E56F4(BEM)': protocal.bem,       # 充电机统计数据报文（CSD）
-                 '081FF456(CEM)': protocal.cem        # 充电机错误报文（CEM）
-                 }
-
-
-# 界面显示类
+# GUI display class
 class Win_Form(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super(Win_Form, self).setupUi(MainWindow)
-        #self.cmbx_protocalType.setEditable(True)
+        # self.cmbx_protocalType.setEditable(True)
         self.pbtn_Analysis.clicked.connect(self.process)
         self.btnClear.clicked.connect(self.clear)
 
-    # 点击解析按钮的槽函数：获取协议类型和数据，利用自定义Protocal类中的方法对协议进行解析
+    # Slot function when clicking the Analyze button: Get the protocol type and data, use the methods in the custom Protocal class to parse the protocol.
     def process(self):
-        type = self.cmbx_protocalType.currentText()     # 获取协议类型
-        data = self.txtEdt_protocalData.toPlainText()   # 获取协议数据
-        result = protocal_dict[type](data) + '\n'     # 协议解析，在返回对结果上加上回车符
-        self.txtEdt_result.append(result)  # 把解析结果显示在界面上
+        type = self.cmbx_protocalType.currentText()     # Get the protocol type
+        data = self.txtEdt_protocalData.toPlainText()   # Get the protocol data
+        result = protocal_dict[type](data) + '\n'       # Parse the protocol, append a newline character to the result
+        self.txtEdt_result.append(result)               # Display the parsing result on the interface
         QApplication.processEvents()
-        self.txtEdt_result.moveCursor(QTextCursor.End)  # 让结果显示框的滚动条移动到最底部以显示最新的解析信息。
+        self.txtEdt_result.moveCursor(QTextCursor.End)  # Scroll the result display box to the bottom to show the latest parsing information.
         QApplication.processEvents()
 
-    # 点击清空按钮的槽函数：清空解析结果框中的内容
+    # Slot function when clicking the Clear button: Clear the content in the parsing result box.
     def clear(self):
         self.txtEdt_result.clear()
         QApplication.processEvents()
@@ -67,4 +66,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

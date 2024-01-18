@@ -86,24 +86,24 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "协议解析"))
-        self.lbl_protocalType.setText(_translate("MainWindow", "协议类型："))
-        self.lbl_protocalData.setText(_translate("MainWindow", "协议数据："))
-        self.pbtn_Analysis.setText(_translate("MainWindow", "解    析"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Protocol Analysis"))
+        self.lbl_protocalType.setText(_translate("MainWindow", "Protocol Type"))
+        self.lbl_protocalData.setText(_translate("MainWindow", "Protocol data:"))
+        self.pbtn_Analysis.setText(_translate("MainWindow", "Analysis"))
         self.cmbx_protocalType.setItemText(0, _translate("MainWindow", "1826F456(CHM)"))
         self.cmbx_protocalType.setItemText(1, _translate("MainWindow", "182756F4(BHM)"))
         self.cmbx_protocalType.setItemText(2, _translate("MainWindow", "1801F456(CRM)"))
-        self.cmbx_protocalType.setItemText(3, _translate("MainWindow", "BRM多包数据报文"))
-        self.cmbx_protocalType.setItemText(4, _translate("MainWindow", "BCP多包数据报文"))
+        self.cmbx_protocalType.setItemText(3, _translate("MainWindow", "BRM multi-packet data message"))
+        self.cmbx_protocalType.setItemText(4, _translate("MainWindow", "BCP multi-packet data message"))
         self.cmbx_protocalType.setItemText(5, _translate("MainWindow", "1808F456(CML)"))
         self.cmbx_protocalType.setItemText(6, _translate("MainWindow", "100956F4(BRO)"))
         self.cmbx_protocalType.setItemText(7, _translate("MainWindow", "100AF456(CRO)"))
         self.cmbx_protocalType.setItemText(8, _translate("MainWindow", "181056F4(BCL)"))
-        self.cmbx_protocalType.setItemText(9, _translate("MainWindow", "BCS多包数据报文"))
+        self.cmbx_protocalType.setItemText(9, _translate("MainWindow", "BCS multi-packet data message"))
         self.cmbx_protocalType.setItemText(10, _translate("MainWindow", "1812F456(CCS)"))
         self.cmbx_protocalType.setItemText(11, _translate("MainWindow", "181356F4(BSM)"))
-        self.cmbx_protocalType.setItemText(12, _translate("MainWindow", "BMV多包数据报文"))
-        self.cmbx_protocalType.setItemText(13, _translate("MainWindow", "BMT多包数据报文"))
+        self.cmbx_protocalType.setItemText(12, _translate("MainWindow", "BMV multi-packet data message"))
+        self.cmbx_protocalType.setItemText(13, _translate("MainWindow", "BMT multi-packet data message"))
         self.cmbx_protocalType.setItemText(14, _translate("MainWindow", "101956F4(BST)"))
         self.cmbx_protocalType.setItemText(15, _translate("MainWindow", "101AF456(CST)"))
         self.cmbx_protocalType.setItemText(16, _translate("MainWindow", "181C56F4(BSD)"))
@@ -115,6 +115,6 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'.SF NS Text\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.btnClear.setText(_translate("MainWindow", "清    空"))
-        self.label.setText(_translate("MainWindow", "解析结果："))
+        self.btnClear.setText(_translate("MainWindow", "Clear"))
+        self.label.setText(_translate("MainWindow", "Parse result:"))
 

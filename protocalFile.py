@@ -162,8 +162,9 @@ class Protocal(object):
         except:
             pass
         finally:
-            resultStr = "***CML充电桩最大输出能力报文***\n最高输出电压：%s\n最低输出电压：%s\n最大输出电流：%s\n" \
-                        "最小输出电流：%s" % (maxPressure, minPressure, maxCurrent, minCurrent)
+            resultStr = "***CML Charging Pile Maximum Output Capability Message***\nHighest Output Voltage: %s\nLowest Output Voltage: %s\nMaximum Output Current: %s\n" \
+            "Minimum Output Current: %s" % (maxPressure, minPressure, maxCurrent, minCurrent)
+
             return resultStr
 
     # bcl电池充电需求报文解析
@@ -185,7 +186,7 @@ class Protocal(object):
             # 判断充电模式，0x01:恒压充电， 0x02:恒流充电
             chargePatternStr = data[8:10]
             if len(chargePatternStr) == 2:
-                chargePatternDict = {'01': '恒压充电', '02': '恒流充电'}
+                chargePatternDict = {'01': 'Constant Voltage Charging', '02': 'Constant Current Charging'}
                 try:
                     chargePattern = chargePatternDict[chargePatternStr]
                 except KeyError:
@@ -193,7 +194,7 @@ class Protocal(object):
         except:
             pass
         finally:
-            resultStr = "***BCL电池充电需求报文***\n电压需求：%s\n电流需求：%s\n充电模式：%s"\
+            resultStr = "***BCL Battery Charging Demand Message***\nVoltage Demand: %s\nCurrent Demand: %s\nCharging Mode: %s"\
                         % (pressureDemand, currentDemand, chargePattern)
             return resultStr
 
@@ -202,7 +203,7 @@ class Protocal(object):
         data = data.replace(' ', '')
         data = data.replace('\n', '')
         versionInfo = processVersion(data)
-        resultStr = "***CHM充电机握手报文***\n充电机通信协议版本号：{}".format(versionInfo)
+        resultStr = "***CHM Charger Handshake Message***\nCharger Communication Protocol Version Number: {}".format(versionInfo)
         return resultStr
 
     # BHM车辆握手报文
@@ -218,7 +219,7 @@ class Protocal(object):
         except:
             pass
         finally:
-            resultStr = "***BHM车辆握手报文***\n最高允许充电总电压：%s" % max_voltage
+            resultStr = "***BHM Vehicle Handshake Message***\nHighest Allowable Total Charging Voltage: %s" % max_voltage
             return resultStr
 
     # CRM充电机辨识报文
@@ -227,14 +228,14 @@ class Protocal(object):
         data = data.replace(' ', '')
         data = data.replace('\n', '')
         # 计算辨识结果
-        identify_result_dict = {'00': 'BMS不能辨识', 'AA': 'BMS能辨识'}
+        identify_result_dict = {'00': 'BMS cannot identify', 'AA': 'BMS can identify'}
         identify_result_str = data[0:2]
         if len(identify_result_str) == 2:
             try:
                 identify_result = identify_result_dict[identify_result_str.upper()]
             except:
                 identify_result = identify_result_str
-        resultStr = "***CRM充电机辨识报文***\n辨识结果：%s" % identify_result
+        resultStr = "***CRM Charger Identification Message***\nIdentification result: %s" % identify_result
         return resultStr
 
     # BRO车辆准备就绪报文
@@ -243,14 +244,14 @@ class Protocal(object):
         data = data.replace(' ', '')
         data = data.replace('\n', '')
         # 计算 BMS是否充电准备就绪
-        isReadyDict = {'00': '否', 'AA': '是'}
+        isReadyDict = {'00': 'No', 'AA': 'Yes'}
         isReadyStr = data[0:2]
         if len(isReadyStr) == 2:
             try:
                 isReady = isReadyDict[isReadyStr.upper()]
             except:
                 isReady = isReadyStr
-        resultStr = "***BRO车辆准备就绪报文***\nBMS是否充电准备就绪：%s" % isReady
+        resultStr = "***CRO Charger Ready Message***\nIs charger ready to charge: %s" % isReady
         return resultStr
 
     # CRO充电机准备就绪报文
@@ -296,7 +297,7 @@ class Protocal(object):
                     times = timesStr
             # 计算是否允许充电
             statusStr = data[12:14]    # 获取第7字节（原字符）
-            statusDict = {'00': '暂停', '01': '允许'}
+            statusDict = {'00': 'Paused', '01': 'Allowed'}
             if len(statusStr) == 2:
                 try:
                     statusBin = bin(int(statusStr, 16))[2:].zfill(8)  # 把第7字节转成2进制
@@ -307,8 +308,8 @@ class Protocal(object):
         except:
             pass
         finally:
-            resultStr = "***CCS充电机充电状态报文***\n电压输出值：%s\n电流输出值：%s\n累计充电时间：%s\n充电允许状态：%s" % (
-                voltageOutput, currentOutput, times, status)
+            resultStr = "***CCS Charger Charging State Message***\nVoltage output value: %s\nCurrent output value: %s\nTotal charging time: %s\nCharging allow status: %s" % (
+        voltageOutput, currentOutput, times, status)
             return resultStr
 
     # BSM动力蓄电池状态信息报文
@@ -376,18 +377,19 @@ class Protocal(object):
                     batteryCurrentStatus = byte6Str
                     batteryTemStatus = byte6Str
                 else:
-                    # 计算单体动力蓄电池电压状态
-                    voltageStatusDict = {'00': '正常', '01': '过高', '10': '过低'}
+                    # Calculate the status of individual power battery voltage
+                    voltageStatusDict = {'00': 'Normal', '01': 'Too High', '10': 'Too Low'}
                     voltageStatus = processBit(byte6Bin, voltageStatusDict, 1, 2)
-                    # 计算整车动力蓄电池SOC状态
-                    batterySOCStatusDict = {'00': '正常', '01': '过高', '10': '过低'}
+                    # Calculate the SOC status of the entire power battery
+                    batterySOCStatusDict = {'00': 'Normal', '01': 'Too High', '10': 'Too Low'}
                     batterySOCStatus = processBit(byte6Bin, batterySOCStatusDict, 3, 4)
-                    # 计算动力蓄电池充电电流状态
-                    batteryCurrentStatusDict = {'00': '正常', '01': '过流', '10': '不可信状态'}
+                    # Calculate the charging current status of the power battery
+                    batteryCurrentStatusDict = {'00': 'Normal', '01': 'Overcurrent', '10': 'Untrusted'}
                     batteryCurrentStatus = processBit(byte6Bin, batteryCurrentStatusDict, 5, 6)
-                    # 计算动力蓄电池温度状态
-                    batteryTemStatusDict = {'00': '正常', '01': '过高', '10': '不可信状态'}
+                    # Calculate the temperature status of the power battery
+                    batteryTemStatusDict = {'00': 'Normal', '01': 'Too High', '10': 'Untrusted'}
                     batteryTemStatus = processBit(byte6Bin, batteryTemStatusDict, 7, 8)
+
 
             byte7Str = data[12:14]  # 获取报文byte7，为后续3个状态的计算提供数据
             if len(byte7Str) == 2:
@@ -398,24 +400,23 @@ class Protocal(object):
                     batteryConnectStatus = byte7Str
                     chargeAllowState = byte7Str
                 else:
-                    # 计算动力蓄电池绝缘状态
-                    batteryInsulationStateDict = {'00': '正常', '01': '不正常', '10': '不可信状态'}
+                    # Calculate the insulation status of the power battery
+                    batteryInsulationStateDict = {'00': 'Normal', '01': 'Not Normal', '10': 'Untrusted'}
                     batteryInsulationState = processBit(byte7Bin, batteryInsulationStateDict, 1, 2)
-                    # 计算动力蓄电池输出连接器连接状态
-                    batteryConnectStatusDict = {'00': '正常', '01': '不正常', '10': '不可信状态'}
+                    # Calculate the connection status of the power battery output connector
+                    batteryConnectStatusDict = {'00': 'Normal', '01': 'Not Normal', '10': 'Untrusted'}
                     batteryConnectStatus = processBit(byte7Bin, batteryConnectStatusDict, 3, 4)
-                    # 计算充电允许状态
-                    chargeAllowStateDict = {'00': '禁止', '01': '允许'}
+                    # Calculate the charge allow status
+                    chargeAllowStateDict = {'00': 'Forbidden', '01': 'Allowed'}
                     chargeAllowState = processBit(byte7Bin, chargeAllowStateDict, 5, 6)
         except:
             pass
         finally:
-            resultStr = "***BSM动力蓄电池状态信息报文***\n最高动力蓄电池电压所在编号：%s\n最高动力蓄电池温度：%s\n" \
-                        "最高温度检测点编号：%s\n最低动力蓄电池温度：%s\n最低温度检测点编号：%s\n单体动力蓄电池电压状态：%s\n" \
-                        "整车动力蓄电池SOC状态：%s\n动力蓄电池充电电流状态：%s\n动力蓄电池温度状态：%s\n动力蓄电池绝缘状态：%s\n" \
-                        "动力蓄电池输出连接器连接状态：%s\n充电允许状态：%s" % (
-                highVoltageNum, highBatteryTem, highTemNum,lowBatterTem, lowTemNum, voltageStatus, batterySOCStatus,
-                batteryCurrentStatus, batteryTemStatus, batteryInsulationState, batteryConnectStatus, chargeAllowState)
+            resultStr = "***BSM Power Battery Status Information Message***\nHighest power battery voltage number: %s\nHighest power battery temperature: %s\n" \
+                "Highest temperature detection point number: %s\nLowest power battery temperature: %s\nLowest temperature detection point number: %s\nIndividual power battery voltage status: %s\n" \
+                "Entire power battery SOC status: %s\nPower battery charging current status: %s\nPower battery temperature status: %s\nPower battery insulation status: %s\n" \
+                "Power battery output connector connection status: %s\nCharge allow status: %s" % (highVoltageNum, highBatteryTem, highTemNum, lowBatterTem, lowTemNum, voltageStatus, batterySOCStatus,
+        batteryCurrentStatus, batteryTemStatus, batteryInsulationState, batteryConnectStatus, chargeAllowState)
             return resultStr
 
 
@@ -477,10 +478,10 @@ class Protocal(object):
         except:
             pass
         finally:
-            resultStr = "***BCS电池充电总状态报文***\n充电电压测量值：{}\n充电电流测量值：{}\n最高单体动力蓄电池电压：{}\n" \
-                        "最高单体动力蓄电池电压所在组号：{}\n当前荷电状态SOC：{}\n估算剩余充电时间：{}".format(voltage, current,
+            resultStr = "***BCS Battery Charging Overall Status Message***\nCharging voltage measurement: {}\nCharging current measurement: {}\nHighest single power battery voltage: {}\n" \
+            "Group number of the highest single power battery voltage: {}\nCurrent State of Charge (SOC): {}\nEstimated remaining charging time: {}".format(voltage, current,
                                                                                highVoltage, groupNum, soc, remainderTime)
-            return resultStr
+        return resultStr
 
     # BST中止充电报文
     def bstEndCharge(self, data):
@@ -498,7 +499,7 @@ class Protocal(object):
         batteryOverTempr = 'null'      # BMS中止充电故障原因-电池组温度过高故障
         highVolRelayFault = 'null'     # BMS中止充电故障原因-高压继电器故障
         monitorPoint2 = 'null'         # BMS中止充电故障原因-监测点2电压检测故障
-        otherFault = 'null'            # BMS中止充电故障原因-其他故障
+        otherFault = 'null'            # BMS中止充电故障原因-Other故障
 
         errorReason = 'null'    # BMS中止充电错误原因
         currentOver = 'null'    # BMS中止充电错误原因-电流过大
@@ -515,17 +516,17 @@ class Protocal(object):
             except:
                 socTarget = totalVoltageSettle = singleVoltageSettle = chargerEnd = endReasonStr
             else:
-                # 计算bit1-2：达到所需要的soc目标值
-                socTargetDict = {'00': '未达到所需SOC目标值', '01': '达到所需SOC目标值', '10': '不可信状态'}
+                # Calculate bits 1-2: Reached the SOC target value required
+                socTargetDict = {'00': 'Did not reach the required SOC target value', '01': 'Reached the required SOC target value', '10': 'Untrusted'}
                 socTarget = processBit(endReasonBin, socTargetDict, 1, 2)
-                # 计算bit3-4：达到总电压的设定值
-                totalVoltageSettleDict = {'00': '未达到总电压设定值', '01': "达到总电压设定值", '10': '不可信状态'}
+                # Calculate bits 3-4: Reached the set total voltage
+                totalVoltageSettleDict = {'00': 'Did not reach the set total voltage', '01': "Reached the set total voltage", '10': 'Untrusted'}
                 totalVoltageSettle = processBit(endReasonBin, totalVoltageSettleDict, 3, 4)
-                # 计算bit5-6：达到单体电压的设定值
-                singleVoltageSettleDict = {'00': '未达到单体电压设定值', '01': "达到单体电压设定值", '10': '不可信状态'}
+                # Calculate bits 5-6: Reached the set single cell voltage
+                singleVoltageSettleDict = {'00': 'Did not reach the set single cell voltage', '01': "Reached the set single cell voltage", '10': 'Untrusted'}
                 singleVoltageSettle = processBit(endReasonBin, singleVoltageSettleDict, 5, 6)
-                # 计算bit7-8：充电机主动中止
-                chargerEndDict = {'00': '正常', '01': "充电机中止（收到CST帧）", '10': '不可信状态'}
+                # Calculate bits 7-8: Charger actively stopped
+                chargerEndDict = {'00': 'Normal', '01': "Charger stopped (received CST frame)", '10': 'Untrusted'}
                 chargerEnd = processBit(endReasonBin, chargerEndDict, 7, 8)
 
         # 计算BMS中止充电故障原因
@@ -538,29 +539,29 @@ class Protocal(object):
                 insulationFault = outConnOverTempr = bmsAndoutConnOverTempr = chargeConnFault = batteryOverTempr = \
                     highVolRelayFault = monitorPoint2 = otherFault = faultReasonStr    # 如果出现异常，则取原字符串
             else:
-                # bit1-2: 绝缘故障
-                insulationFaultDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 1-2: Insulation fault
+                insulationFaultDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 insulationFault = processBit(faultReasonBin, insulationFaultDict, 1, 2)
-                # bit3-4：输出连接器过温故障
-                outConnOverTemprDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 3-4: Over-temperature fault of output connector
+                outConnOverTemprDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 outConnOverTempr = processBit(faultReasonBin, outConnOverTemprDict, 3, 4)
-                # bit5-6：BMS元件、输出连接器过温
-                bmsAndoutConnOverTemprDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 5-6: Over-temperature of BMS components, output connector
+                bmsAndoutConnOverTemprDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 bmsAndoutConnOverTempr = processBit(faultReasonBin, bmsAndoutConnOverTemprDict, 5, 6)
-                # bit7-8: 充电连接器故障
-                chargeConnFaultDict = {'00': '充电连接器正常', '01': '充电连接器故障', '10': '不可信状态'}
+                # bits 7-8: Charging connector fault
+                chargeConnFaultDict = {'00': 'Charging connector Normal', '01': 'Charging connector fault', '10': 'Untrusted'}
                 chargeConnFault = processBit(faultReasonBin, chargeConnFaultDict, 7, 8)
-                # bit9-10: 电池组温度过高故障
-                batteryOverTemprDict = {'00': '电池组温度正常', '01': '电池组温度故障', '10': '不可信状态'}
+                # bits 9-10: Battery pack over-temperature fault
+                batteryOverTemprDict = {'00': 'Battery pack temperature Normal', '01': 'Battery pack temperature fault', '10': 'Untrusted'}
                 batteryOverTempr = processBit(faultReasonBin, batteryOverTemprDict, 9, 10)
-                # bit11-12: 高压继电器故障
-                highVolRelayFaultDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 11-12: High voltage relay fault
+                highVolRelayFaultDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 highVolRelayFault = processBit(faultReasonBin, highVolRelayFaultDict, 11, 12)
-                # bit13-14: 监测点2电压检测故障
-                monitorPoint2Dict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 13-14: Monitoring point 2 voltage detection fault
+                monitorPoint2Dict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 monitorPoint2 = processBit(faultReasonBin, monitorPoint2Dict, 13, 14)
-                # bit15-16: 其他故障
-                otherFaultDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 15-16: Other faults
+                otherFaultDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 otherFault = processBit(faultReasonBin, otherFaultDict, 15, 16)
 
         # 计算BMS中止充电错误原因
@@ -571,26 +572,17 @@ class Protocal(object):
             except:
                 currentOver = voltageOver = errorReasonStr
             else:
-                # 电流过大
-                currentOverDict = {'00': '电流正常', '01': '电流超过需求值', '10': '不可信状态'}
+                # Current too high
+                currentOverDict = {'00': 'Current Normal', '01': 'Current exceeds demand value', '10': 'Untrusted'}
                 currentOver = processBit(errorReasonBin, currentOverDict, 1, 2)
-                # 电压过大
-                voltageOverDict = {'00': '正常', '01': '电压异常', '10': '不可信状态'}
+                # Voltage too high
+                voltageOverDict = {'00': 'Normal', '01': 'Voltage anomaly', '10': 'Untrusted'}
                 voltageOver = processBit(errorReasonBin, voltageOverDict, 3, 4)
-        """
-        resultStr = "***BSM中止充电报文（BST）***\n一、BMS中止充电原因：\n达到所需求的SOC目标值：{}\n达到总电压的设定值：{}\n" \
-                    "达到单体电压的设定值：{}\n充电机主动中止：{}\n二、BMS中止充电故障原因：\n绝缘故障：{}\n" \
-                    "输出连接器过温故障：{}\nBMS元件、输出连接器过温：{}\n充电连接器故障：{}\n电池组温度过高故障：{}\n" \
-                    "高压继电器故障：{}\n监测点2电压检测故障：{}\n其他故障：{}\n三、BMS中止充电错误原因：\n" \
-                    "电流过大：{}\n电压异常：{}".format(socTarget, totalVoltageSettle, singleVoltageSettle, chargerEnd,
-                                                  insulationFault, outConnOverTempr, bmsAndoutConnOverTempr,
-                                                  chargeConnFault, batteryOverTempr, highVolRelayFault, monitorPoint2,
-                                                  otherFault, currentOver, voltageOver)
-        """
-        resultStr = "***BSM中止充电报文（BST）***\n一、BMS中止充电原因\nSOC：{}\n总电压：{}\n单体电压：{}\n充电机：{}\n" \
-                    "二、BMS中止充电故障原因\n绝缘：{}\n输出连接器：{}\nBMS元件、输出连接器：{}\n充电连接器：{}\n电池组温度：" \
-                    "{}\n高压继电器：{}\n检测点2电压：{}\n其他：{}\n三、BMS中止充电错误原因\n电流：{}\n电压：{}" \
-                    "".format(socTarget, totalVoltageSettle, singleVoltageSettle, chargerEnd,insulationFault,
+
+        resultStr = "***BMS Stop Charging Message (BST)***\nI. BMS Stop Charging Reasons\nSOC: {}\nTotal voltage: {}\nSingle cell voltage: {}\nCharger: {}\n" \
+                    "II. BMS Stop Charging Fault Reasons\nInsulation: {}\nOutput connector: {}\nBMS components, output connector: {}\nCharging connector: {}\nBattery pack temperature: " \
+                    "{}\nHigh voltage relay: {}\nMonitoring point 2 voltage: {}\nOther: {}\nIII. BMS Stop Charging Error Reasons\nCurrent: {}\nVoltage: {}" \
+                    "".format(socTarget, totalVoltageSettle, singleVoltageSettle, chargerEnd, insulationFault,
                               outConnOverTempr, bmsAndoutConnOverTempr, chargeConnFault, batteryOverTempr,
                               highVolRelayFault, monitorPoint2, otherFault, currentOver, voltageOver)
 
@@ -610,7 +602,7 @@ class Protocal(object):
         innerOverTempr = 'null' # 充电机中止充电故障原因-充电机内部过温故障
         notDeliveryElec = 'null'    # 充电机中止充电故障原因-所需电量不能传送
         sharpStop = 'null'  # 充电机中止充电故障原因-充电机急停故障
-        otherFault = 'null' # 充电机中止充电故障原因-其他故障
+        otherFault = 'null' # 充电机中止充电故障原因-Other故障
 
         endChargeErrorReason = 'null'   # 充电机中止充电错误原因
         currentNotMatch = 'null'    # 充电机中止充电错误原因-电流不匹配
@@ -628,16 +620,17 @@ class Protocal(object):
                 reachCondition = manualEnd = faultEnd = bmsEnd = endChargeReasonStr     # 取原值
             else:
                 # bit1-2: 达到充电机设定的条件中止
-                reachConditionDict = {'00': '正常', '01': '达到充电机设定条件中止', '10': '不可信状态'}
+                # bits 1-2: Stopped due to conditions set by the charger
+                reachConditionDict = {'00': 'Normal', '01': 'Stopped due to charger set conditions', '10': 'Untrusted'}
                 reachCondition = processBit(endChargeReasonBin, reachConditionDict, 1, 2)
-                # bit3-4: 人工中止
-                manualEndDict = {'00': '正常', '01': '人工中止', '10': '不可信状态'}
+                # bits 3-4: Manually stopped
+                manualEndDict = {'00': 'Normal', '01': 'Manually stopped', '10': 'Untrusted'}
                 manualEnd = processBit(endChargeReasonBin, manualEndDict, 3, 4)
-                # bit5-6: 故障中止
-                faultEndDict = {'00': '正常', '01': '故障中止', '10': '不可信状态'}
+                # bits 5-6: Stopped due to a fault
+                faultEndDict = {'00': 'Normal', '01': 'Stopped due to a fault', '10': 'Untrusted'}
                 faultEnd = processBit(endChargeReasonBin, faultEndDict, 5, 6)
-                # bit7-8: BMS主动中止
-                bmsEndDict = {'00': '正常', '01': 'BMS中止(收到BST帧)', '10': '不可信状态'}
+                # bits 7-8: Actively stopped by BMS
+                bmsEndDict = {'00': 'Normal', '01': 'Actively stopped by BMS (received BST frame)', '10': 'Untrusted'}
                 bmsEnd = processBit(endChargeReasonBin, bmsEndDict, 7, 8)
 
         # 充电机中止充电故障原因
@@ -649,24 +642,26 @@ class Protocal(object):
             except:
                 overTempr = connFault = innerOverTempr = notDeliveryElec = sharpStop = otherFault = endChargeFaultReasonStr
             else:
-                # bit1-2: 充电机过温故障
-                overTemprDict = {'00': '充电机温度正常', '01': '充电机过温', '10': '不可信状态'}
+                # bits 1-2: Charger over-temperature fault
+                overTemprDict = {'00': 'Charger temperature Normal', '01': 'Charger over-temperature', '10': 'Untrusted'}
                 overTempr = processBit(endChargeFaultReasonBin, overTemprDict, 1, 2)
-                # bit3-4: 充电机连接器故障
-                connFaultDict = {'00': '充电连接器正常', '01': '充电连接器故障', '10': '不可信状态'}
+                # bits 3-4: Charger connector fault
+                connFaultDict = {'00': 'Charging connector Normal', '01': 'Charging connector fault', '10': 'Untrusted'}
                 connFault = processBit(endChargeFaultReasonBin, connFaultDict, 3, 4)
-                # bit5-6: 充电机内部过温故障
-                innerOverTemprDict = {'00': '充电机内部温度正常', '01': '充电机内部过温', '10': '不可信状态'}
+                # bits 5-6: Internal over-temperature fault of the charger
+                innerOverTemprDict = {'00': 'Charger internal temperature Normal', '01': 'Charger internal over-temperature', '10': 'Untrusted'}
                 innerOverTempr = processBit(endChargeFaultReasonBin, innerOverTemprDict, 5, 6)
-                # bit7-8: 所需电量不能传送
-                notDeliveryElecDict = {'00': '电量传送正常', '01': '电量不能传送', '10': '不可信状态'}
+                # bits 7-8: Failure to transmit the required power
+                notDeliveryElecDict = {'00': 'Power transmission Normal', '01': 'Failure to transmit power', '10': 'Untrusted'}
                 notDeliveryElec = processBit(endChargeFaultReasonBin, notDeliveryElecDict, 7, 8)
-                # bit9-10: 充电机急停故障
-                sharpStopDict = {'00': '正常', '01': '充电机急停', '10': '不可信状态'}
+                # bits 9-10: Charger emergency stop fault
+                sharpStopDict = {'00': 'Normal', '01': 'Charger emergency stop', '10': 'Untrusted'}
                 sharpStop = processBit(endChargeFaultReasonBin, sharpStopDict, 9, 10)
-                # bit11-12: 其他故障
-                otherFaultDict = {'00': '正常', '01': '故障', '10': '不可信状态'}
+                # bits 11-12: Other faults
+                otherFaultDict = {'00': 'Normal', '01': 'Fault', '10': 'Untrusted'}
                 otherFault = processBit(endChargeFaultReasonBin, otherFaultDict, 11, 12)
+
+# Reasons for Charger Stop Charging due to an error
 
         # 充电机中止充电错误原因
         endChargeErrorReasonStr = data[6:8]     # 取byte4
@@ -676,22 +671,23 @@ class Protocal(object):
             except:
                 currentNotMatch = voltageError = endChargeErrorReasonStr
             else:
-                # 电流不匹配
-                currentNotMatchDict = {'00': '电流匹配', '01': '电流不匹配', '10': '不可信状态'}
+                # Current mismatch
+                currentNotMatchDict = {'00': 'Current matches', '01': 'Current mismatch', '10': 'Untrusted'}
                 currentNotMatch = processBit(endChargeErrorReasonBin, currentNotMatchDict, 1, 2)
-                # 电压异常
-                voltageErrorDict = {'00': '正常', '01': '电压异常', '10': '不可信状态'}
+                # Voltage anomaly
+                voltageErrorDict = {'00': 'Normal', '01': 'Voltage anomaly', '10': 'Untrusted'}
                 voltageError = processBit(endChargeErrorReasonBin, voltageErrorDict, 3, 4)
+# This code snippet processes specific reasons for a charger stopping the 
         """
         resultStr = "***充电机中止充电报文（CST）***\n一、充电机中止充电原因\n达到充电机设定的条件中止：{}\n人工中止：{}\n故障中止：" \
                     "{}\nBMS主动中止：{}\n二、充电机中止充电故障原因\n充电机过温故障：{}\n充电机连接器故障：{}\n充电机内部过温故障：" \
-                    "{}\n所需电量不能传送：{}\n充电机急停故障：{}\n其他故障：{}\n三、充电机中止充电错误原因\n电流不匹配：{}\n电压" \
+                    "{}\n所需电量不能传送：{}\n充电机急停故障：{}\nOther故障：{}\n三、充电机中止充电错误原因\n电流不匹配：{}\n电压" \
                     "异常：{}".format(reachCondition, manualEnd, faultEnd, bmsEnd, overTempr, connFault, innerOverTempr,
                                    notDeliveryElec, sharpStop, otherFault, currentNotMatch, voltageError)
         """
-        resultStr = "***充电机中止充电报文（CST）***\n一、充电机中止充电原因\n达到充电机设定的条件中止：{}\n人工中止：{}\n故障中止：" \
-                    "{}\nBMS主动中止：{}\n二、充电机中止充电故障原因\n充电机：{}\n充电机连接器：{}\n充电机内部温度：" \
-                    "{}\n所需电量传送：{}\n充电机急停故障：{}\n其他：{}\n三、充电机中止充电错误原因\n电流：{}\n电压：{}" \
+        resultStr = "***Charger Stop Charging Message (CST)***\nI. Reasons for Charger Stop Charging\nStopped due to reaching the conditions set by the charger: {}\nManually stopped: {}\nStopped due to a fault: " \
+                    "{}\nActively stopped by BMS: {}\nII. Fault Reasons for Charger Stop Charging\nCharger: {}\nCharger connector: {}\nInternal temperature of the charger: " \
+                    "{}\nFailure to transmit the required power: {}\nCharger emergency stop fault: {}\nOther: {}\nIII. Error Reasons for Charger Stop Charging\nCurrent: {}\nVoltage: {}" \
                     "".format(reachCondition, manualEnd, faultEnd, bmsEnd, overTempr, connFault, innerOverTempr,
                                    notDeliveryElec, sharpStop, otherFault, currentNotMatch, voltageError)
 
@@ -734,9 +730,9 @@ class Protocal(object):
 
         # 组装返回的结果字符串
         batteryNums = len(batteryVoltageGroups)     # 单体动力蓄电池个数
-        resultStr = '***单体动力蓄电池电压报文(BMV)***\n'
+        resultStr = '***Single Power Battery Cell Voltage Message (BMV)***\n'
         for i in range(batteryNums):
-            batteryDescription = '# {} 单体动力蓄电池--> \n电池电压：{}V\n电池分组号：{}\n'.format(
+            batteryDescription = '# {} Single power battery cell--> \nBattery voltage: {}V\nBattery group number: {}\n'.format(
                 i+1, batteryVoltageGroups[i][0], batteryVoltageGroups[i][1])
             resultStr = resultStr + batteryDescription
 
@@ -780,8 +776,8 @@ class Protocal(object):
         versionStr = data[0:6]      # byte1-3
         version = processVersion(versionStr)
         # 电池类型
-        batteryTypeDict = {'01': '铅酸电池', '02': '镍氢电池', '03': '磷酸铁锂电池', '04': '锰酸锂电池', '05': '钴酸锂电池',
-                           '06': '三元材料电池', '07': '聚合物锂离子电池', '08': '钛酸锂电池', 'FF': '其他电池'}
+        batteryTypeDict = {'01': 'Lead-acid battery', '02': 'Nickel-hydrogen battery', '03': 'Lithium iron phosphate battery', '04': 'Lithium manganese battery', '05': 'Lithium cobalt battery',
+                       '06': 'Ternary material battery', '07': 'Lithium-ion polymer battery', '08': 'Lithium titanate battery', 'FF': 'Other types of batteries'}
         batteryTypeStr = data[6:8]  # byte4
         if len(batteryTypeStr) == 2:
             try:
@@ -809,7 +805,7 @@ class Protocal(object):
         # 电池组充电次数
         batteryGroupsChargeTimes = data[38:44]   # byte20-22
         # 电池组产权标识
-        batteryGroupsPropertyRightDict = {'0': '租赁', '1': '车自有'}
+        batteryGroupsPropertyRightDict = {'0': 'Leased', '1': 'Owned by the vehicle'}
         batteryGroupsPropertyRightStr = data[44:46]     # byte23
         if len(batteryGroupsPropertyRightStr) == 2:
             try:
@@ -824,12 +820,12 @@ class Protocal(object):
         bmsVersion = data[82:98]     # byte42-49
 
         # 组装输出字符串
-        resultStr = "***BMS和车辆辨识报文(BRM)***\nBMS通信协议版本号：{}\n电池类型：{}\n整车动力蓄电池系统额定容量：{}\n" \
-                    "整车动力蓄电池系统额定总电压：{}\n电池生产厂商名称：{}\n电池组序号：{}\n电池组生产日期：{}/{}/{}\n" \
-                    "电池组充电次数：{}\n电池组产权标识：{}\n车辆识别码：{}\nBMS版本信息：{}".format(version, batteryType,
-                    capacity, totalVoltage, factoryName, batteryGroupSerialNum, batteryGroupsProductionDate_year,
-                    batteryGroupsProductionDate_month, batteryGroupsProductionDate_day, batteryGroupsChargeTimes,
-                    batteryGroupsPropertyRight, vehicleIdentify, bmsVersion)
+        resultStr = "***BMS and Vehicle Identification Message (BRM)***\nBMS communication protocol version number: {}\nBattery type: {}\nRated capacity of the entire vehicle power battery system: {}\n" \
+                "Rated total voltage of the entire vehicle power battery system: {}\nBattery manufacturer name: {}\nBattery pack serial number: {}\nBattery pack production date: {}/{}/{}\n" \
+                "Number of times the battery pack has been charged: {}\nProperty rights identification of the battery pack: {}\nVehicle identification code: {}\nBMS version information: {}".format(version, batteryType,
+                capacity, totalVoltage, factoryName, batteryGroupSerialNum, batteryGroupsProductionDate_year,
+                batteryGroupsProductionDate_month, batteryGroupsProductionDate_day, batteryGroupsChargeTimes,
+                batteryGroupsPropertyRight, vehicleIdentify, bmsVersion)
         return resultStr
 
     # BMT多包（动力蓄电池温度报文）
@@ -861,9 +857,9 @@ class Protocal(object):
 
         # 组装返回的结果字符串
         batteryNums = len(batteryTemprGroups)  # 动力蓄电池个数
-        resultStr = '***动力蓄电池温度报文(BMT)***\n'
+        resultStr = '***Power Battery Temperature Message (BMT)***\n'
         for i in range(batteryNums):
-            batteryDescription = '动力蓄电池温度{}：{}\n'.format(i + 1, batteryTemprGroups[i])
+            batteryDescription = 'Power battery temperature {}：{}\n'.format(i + 1, batteryTemprGroups[i])
             resultStr = resultStr + batteryDescription
 
         return resultStr
@@ -910,8 +906,8 @@ class Protocal(object):
             highTemprature = 'null'
 
         # 结果返回
-        resultStr = "***BMS统计数据报文（BSD）***\n中止荷电状态SOC：{}\n动力蓄电池单体最低电压：{}\n动力蓄电池单体最高电压：{}\n" \
-                    "动力蓄电池最低温度：{}\n动力蓄电池最高温度：{}".format(soc, lowVoltage, highVoltage, lowTemprature, highTemprature)
+        resultStr = "***BMS Statistical Data Message (BSD)***\nState of Charge (SOC) upon termination: {}\nLowest voltage of individual power battery cell: {}\nHighest voltage of individual power battery cell: {}\n" \
+                    "Lowest temperature of power battery: {}\nHighest temperature of power battery: {}".format(soc, lowVoltage, highVoltage, lowTemprature, highTemprature)
         return resultStr
 
     # 充电机统计数据报文（CSD）
@@ -929,7 +925,7 @@ class Protocal(object):
         else:
             num = 'null'    # 如果长度错误则取null
         # 返回结果
-        resultStr = "***充电机统计数据报文(CSD)***\n累计充电时间：{}\n输出能量：{}\n充电机编号：{}".format(time, power, num)
+        resultStr = "***Charger Statistical Data Message (CSD)***\nAccumulated charging time: {}\nOutput energy: {}\nCharger number: {}".format(time, power, num)
         return resultStr
 
     # BMS错误报文（BEM）
@@ -943,18 +939,18 @@ class Protocal(object):
         if len(byte1Str) == 2:
             try:
                 byte1Bin = bin(int(byte1Str, 16))[2:].zfill(8)
-                # 接收SPN2560=0x00的充电机辨识报文超时
-                spn00_chargePileTimeOutStrDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收SPN2560=0x00的充电机辨识报文Timeout
+                spn00_chargePileTimeOutStrDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 spn00_chargePileTimeOut = processBit(byte1Bin, spn00_chargePileTimeOutStrDict, 1, 2)
-                # 接收SPN2560=0xAA的充电机辨识报文超时
-                spnAA_chargePileTimeOutStrDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收SPN2560=0xAA的充电机辨识报文Timeout
+                spnAA_chargePileTimeOutStrDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 spnAA_chargePileTimeOut = processBit(byte1Bin, spnAA_chargePileTimeOutStrDict, 3, 4)
             except:
                 spn00_chargePileTimeOut = byte1Str
                 spnAA_chargePileTimeOut = byte1Str
         else:
-            spn00_chargePileTimeOut = 'null'    # 接收SPN2560=0x00的充电机辨识报文超时
-            spnAA_chargePileTimeOut = 'null'    # 接收SPN2560=0xAA的充电机辨识报文超时
+            spn00_chargePileTimeOut = 'null'    # 接收SPN2560=0x00的充电机辨识报文Timeout
+            spnAA_chargePileTimeOut = 'null'    # 接收SPN2560=0xAA的充电机辨识报文Timeout
 
         # byte2
         byte2Str = data[2: 4]   # byte2原字符串
@@ -962,18 +958,18 @@ class Protocal(object):
         if len(byte2Str) == 2:
             try:
                 byte2Bin = bin(int(byte2Str, 16))[2:].zfill(8)
-                # 接收充电机的时间同步和充电机最大输出能力报文超时
-                recv_pile_timeSynAndMaxCapDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收充电机的时间同步和充电机最大输出能力报文Timeout
+                recv_pile_timeSynAndMaxCapDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_pile_timeSynAndMaxCap = processBit(byte2Bin, recv_pile_timeSynAndMaxCapDict, 1, 2)
-                # 接收充电机完成充电准备报文超时
-                recv_pile_readyOkDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收充电机完成充电准备报文Timeout
+                recv_pile_readyOkDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_pile_readyOk = processBit(byte2Bin, recv_pile_readyOkDict, 3, 4)
             except:
                 recv_pile_timeSynAndMaxCap = byte2Str
                 recv_pile_readyOk = byte2Str
         else:
-            recv_pile_timeSynAndMaxCap = 'null'     # 接收充电机的时间同步和充电机最大输出能力报文超时
-            recv_pile_readyOk = 'null'  # 接收充电机完成充电准备报文超时
+            recv_pile_timeSynAndMaxCap = 'null'     # 接收充电机的时间同步和充电机最大输出能力报文Timeout
+            recv_pile_readyOk = 'null'  # 接收充电机完成充电准备报文Timeout
 
         # byte3
         byte3Str = data[4: 6]   # byte3原字符串
@@ -981,18 +977,18 @@ class Protocal(object):
         if len(byte3Str) == 2:
             try:
                 byte3Bin = bin(int(byte3Str, 16))[2:].zfill(8)
-                # 接收充电机充电状态报文超时
-                recv_pile_chargeStateTimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收充电机充电状态报文Timeout
+                recv_pile_chargeStateTimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_pile_chargeStateTimeOut = processBit(byte3Bin, recv_pile_chargeStateTimeOut_Dict, 1, 2)
-                # 接收充电机中止充电报文超时
-                recv_pile_FinishChargeTimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收充电机中止充电报文Timeout
+                recv_pile_FinishChargeTimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_pile_FinishChargeTimeOut = processBit(byte3Bin, recv_pile_FinishChargeTimeOut_Dict, 3, 4)
             except:
                 recv_pile_chargeStateTimeOut = byte3Str
                 recv_pile_FinishChargeTimeOut = byte3Str
         else:
-            recv_pile_chargeStateTimeOut = 'null'      # 接收充电机充电状态报文超时
-            recv_pile_FinishChargeTimeOut = 'null'      # 接收充电机中止充电报文超时
+            recv_pile_chargeStateTimeOut = 'null'      # 接收充电机充电状态报文Timeout
+            recv_pile_FinishChargeTimeOut = 'null'      # 接收充电机中止充电报文Timeout
 
         # byte4
         byte4Str = data[6: 8]   # byte4原字符串
@@ -1000,27 +996,27 @@ class Protocal(object):
         if len(byte4Str) == 2:
             try:
                 byte4Bin = bin(int(byte4Str, 16))[2:].zfill(8)
-                # 接收充电机充电统计报文超时
-                recv_pill_chargeStatistics_TimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收充电机充电统计报文Timeout
+                recv_pill_chargeStatistics_TimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_pill_chargeStatistics_TimeOut = processBit(byte4Bin, recv_pill_chargeStatistics_TimeOut_Dict, 1, 2)
-                # 其他
+                # Other
                 other = byte4Bin[:-2]
             except:
                 recv_pill_chargeStatistics_TimeOut = byte4Str
                 other = byte4Str
         else:
-            recv_pill_chargeStatistics_TimeOut = 'null'     # 接收充电机充电统计报文超时
-            other = 'null'  # 其他
+            recv_pill_chargeStatistics_TimeOut = 'null'     # 接收充电机充电统计报文Timeout
+            other = 'null'  # Other
 
         # 结果返回
-        resultStr = "***BMS错误报文(BEM)***\n接收SPN2560=0x00的充电机辨识报文超时：{}\n接收SPN2560=0xAA的充电机辨识报文超时：{}\n" \
-                    "接收充电机的时间同步和充电机最大输出能力报文超时：{}\n接收充电机完成充电准备报文超时：{}\n" \
-                    "接收充电机充电状态报文超时：{}\n接收充电机中止充电报文超时：{}\n接收充电机充电统计报文超时：{}\n其他：{}".format(
+        resultStr = "***BMS Error Message (BEM)***\nTimeout for receiving the charger identification message with SPN2560：{}\nTimeout for receiving the charger identification message with SPN2560=0xAA:{}\n" \
+                    "Timeout of receiving the time synchronization and maximum output capacity message of the charger:{}\nTimeout of receiving the message of charger completion of charging preparation:{}\n" \
+                    "Timeout for receiving charger charging status message:{}\nTimeout for receiving charger abort charging message:{}\nTimeout for receiving charger charging statistics message:{}\nOthers:{}".format(
             spn00_chargePileTimeOut, spnAA_chargePileTimeOut, recv_pile_timeSynAndMaxCap, recv_pile_readyOk,
             recv_pile_chargeStateTimeOut, recv_pile_FinishChargeTimeOut, recv_pill_chargeStatistics_TimeOut, other)
         return resultStr
 
-    # 充电机错误报文（CEM）
+    # Charger error message（CEM）
     def cem(self, data):
         data = data.replace(' ', '')
         data = data.replace('\n', '')
@@ -1030,13 +1026,13 @@ class Protocal(object):
         if len(byte1Str) == 2:
             try:
                 byte1Bin = bin(int(byte1Str, 16))[2:].zfill(8)
-                # 接收BMS和车辆的辨识报文超时
-                recv_vehicle_bmsAndIdenty_timeOutDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # Receive BMS and vehicle identification messages Timeout
+                recv_vehicle_bmsAndIdenty_timeOutDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_bmsAndIdenty_timeOut = processBit(byte1Bin, recv_vehicle_bmsAndIdenty_timeOutDict, 1, 2)
             except:
                 recv_vehicle_bmsAndIdenty_timeOut = byte1Str
         else:
-            recv_vehicle_bmsAndIdenty_timeOut = 'null'  # 接收BMS和车辆的辨识报文超时
+            recv_vehicle_bmsAndIdenty_timeOut = 'null'  # Receive BMS and vehicle identification messages Timeout
 
 
         # byte2
@@ -1045,18 +1041,20 @@ class Protocal(object):
         if len(byte2Str) == 2:
             try:
                 byte2Bin = bin(int(byte2Str, 16))[2:].zfill(8)
-                # 接收电池充电参数报文超时
-                recv_vehicle_chargePam_timeout_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 
+# Receive battery charging parameter message Timeout
+                recv_vehicle_chargePam_timeout_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_chargePam_timeout = processBit(byte2Bin, recv_vehicle_chargePam_timeout_Dict, 1, 2)
-                # 接收BMS完成充电准备报文超时
-                recv_vehicle_readyOkDict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收BMS完成充电准备报文Timeout
+                recv_vehicle_readyOkDict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_readyOk = processBit(byte2Bin, recv_vehicle_readyOkDict, 3, 4)
             except:
                 recv_vehicle_chargePam_timeout = byte2Str
                 recv_vehicle_readyOk = byte2Str
         else:
-            recv_vehicle_chargePam_timeout = 'null'  # 接收电池充电参数报文超时
-            recv_vehicle_readyOk = 'null'  # 接收BMS完成充电准备报文超时
+            recv_vehicle_chargePam_timeout = 'null'  # 
+# Receive battery charging parameter message Timeout
+            recv_vehicle_readyOk = 'null'  # 接收BMS完成充电准备报文Timeout
 
         # byte3
         byte3Str = data[4:6]  # byte3原字符串
@@ -1064,23 +1062,23 @@ class Protocal(object):
         if len(byte3Str) == 2:
             try:
                 byte3Bin = bin(int(byte3Str, 16))[2:].zfill(8)
-                # 接收电池充电总状态报文超时
-                recv_vehicle_chargeStateTimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收电池充电总状态报文Timeout
+                recv_vehicle_chargeStateTimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_chargeStateTimeOut = processBit(byte3Bin, recv_vehicle_chargeStateTimeOut_Dict, 1, 2)
-                # 接收电池充电要求报文超时
-                recv_vehicle_chargeDemandTimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收电池充电要求报文Timeout
+                recv_vehicle_chargeDemandTimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_chargeDemandTimeOut = processBit(byte3Bin, recv_vehicle_chargeDemandTimeOut_Dict, 3, 4)
-                # 接收BMS中止充电报文超时
-                recv_vehicle_FinishChargeTimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收BMS中止充电报文Timeout
+                recv_vehicle_FinishChargeTimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_FinishChargeTimeOut = processBit(byte3Bin, recv_vehicle_FinishChargeTimeOut_Dict, 5, 6)
             except:
                 recv_vehicle_chargeStateTimeOut = byte3Str
                 recv_vehicle_chargeDemandTimeOut = byte3Str
                 recv_vehicle_FinishChargeTimeOut = byte3Str
         else:
-            recv_vehicle_chargeStateTimeOut = 'null'  # 接收电池充电总状态报文超时
-            recv_vehicle_chargeDemandTimeOut = 'null'  # 接收电池充电要求报文超时
-            recv_vehicle_FinishChargeTimeOut = 'null'   # 接收BMS中止充电报文超时
+            recv_vehicle_chargeStateTimeOut = 'null'  # 接收电池充电总状态报文Timeout
+            recv_vehicle_chargeDemandTimeOut = 'null'  # 接收电池充电要求报文Timeout
+            recv_vehicle_FinishChargeTimeOut = 'null'   # 接收BMS中止充电报文Timeout
 
 
         # byte4
@@ -1089,23 +1087,23 @@ class Protocal(object):
         if len(byte4Str) == 2:
             try:
                 byte4Bin = bin(int(byte4Str, 16))[2:].zfill(8)
-                # 接收BMS充电统计报文超时
-                recv_vehicle_chargeStatistics_TimeOut_Dict = {'00': '正常', '01': '超时', '10': '不可信状态'}
+                # 接收BMS充电统计报文Timeout
+                recv_vehicle_chargeStatistics_TimeOut_Dict = {'00': 'Normal', '01': 'Timeout', '10': 'Untrusted'}
                 recv_vehicle_chargeStatistics_TimeOut = processBit(byte4Bin, recv_vehicle_chargeStatistics_TimeOut_Dict,
                                                                    1, 2)
-                # 其他
+                # Other
                 other = byte4Bin[:-2]
             except:
                 recv_vehicle_chargeStatistics_TimeOut = byte4Str    # 如果异常，则等于原字符串
                 other = byte4Str
         else:
-            recv_vehicle_chargeStatistics_TimeOut = 'null'  # 接收BMS充电统计报文超时
-            other = 'null'  # 其他
+            recv_vehicle_chargeStatistics_TimeOut = 'null'  # 接收BMS充电统计报文Timeout
+            other = 'null'  # Other
 
         # 结果返回
-        resultStr = "***充电机错误报文（CEM）***\n接收BMS和车辆的辨识报文超时：{}\n接收电池充电参数报文超时：{}\n" \
-                    "接收BMS完成充电准备报文超时：{}\n接收电池充电总状态报文超时：{}\n接收电池充电要求报文超时：{}\n" \
-                    "接收BMS中止充电报文超时：{}\n接收BMS充电统计报文超时：{}\n其他：{}".format(
+        resultStr = "***Charger error message（CEM）***\nReceive BMS and vehicle identification messages Timeout：{}\nReceive battery charging parameter message Timeout：{}\n" \
+                    "Receive BMS complete charging preparation message Timeout：{}\nReceive battery charging status message Timeout：{}\nReceive battery charging request messageTimeout：{}\n" \
+                    "Receive BMS charging termination message Timeout：{}\nReceive BMS charging statistics messages Timeout：{}\nOther：{}".format(
             recv_vehicle_bmsAndIdenty_timeOut, recv_vehicle_chargePam_timeout, recv_vehicle_readyOk,
             recv_vehicle_chargeStateTimeOut, recv_vehicle_chargeDemandTimeOut, recv_vehicle_FinishChargeTimeOut,
             recv_vehicle_chargeStatistics_TimeOut, other)
